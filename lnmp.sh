@@ -168,7 +168,7 @@ function install_mysql56 {
         chown -R mysql.mysql /data/mysqldata
         chown -R mysql.mysql /data/mysqllog
 
-        echo "创建mysql初始用户root 密码b9LdPvwyZEW>=o"
+        echo "创建mysql初始用户root 密码b9LdP#dfZEW>=o"
         mysql -e "grant all privileges on *.* to root@'localhost' identified by 'b9LdPvwyZEW>=o'";
 
         service mysqld start
@@ -424,7 +424,7 @@ case "$input" in
                 ;;
         1)      install_nginx;
                 ;;
-        2)  install_php71;
+        2)  	install_php71;
                 ;;
         3)      install_mysql57;
                 ;;
@@ -442,7 +442,7 @@ case "$input" in
                 ;;
         10)     install_openvpn;
                 ;;
-        11) create_openvpn_client_key;
+        11) 	create_openvpn_client_key;
                 ;;
         *)
                 echo -e "\033[31m Input Error! \033[0m" && exit -1;;
