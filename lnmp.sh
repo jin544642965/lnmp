@@ -210,12 +210,12 @@ MeD0YkjOik8kKjGxR+B57nhepidsIz1rUlnsc/2lCXv1mSKKAfUtl8wtmbaL" >/home/www/.ssh/au
 
 function install_mongodb4 {
         echo "
-[mongodb-org-4.0]
-name=MongoDB Repository
-baseurl=https://repo.mongodb.org/yum/redhat/\$releasever/mongodb-org/4.0/x86_64/
-gpgcheck=1
-enabled=1
-gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc">/etc/yum.repos.d/mongodb-org-4.0.repo
+		[mongodb-org-4.0]
+		name=MongoDB Repository
+		baseurl=https://repo.mongodb.org/yum/redhat/\$releasever/mongodb-org/4.0/x86_64/
+		gpgcheck=1
+		enabled=1
+		gpgkey=https://www.mongodb.org/static/pgp/server-4.0.asc">/etc/yum.repos.d/mongodb-org-4.0.repo
         yum install -y mongodb-org
         sed -i 's/^#security:/security:/g' /etc/mongod.conf
 
@@ -320,21 +320,21 @@ nssl --with-ssl-lib=/usr/lib64/openssl
                 ./build-dh 
 
                 echo -e "\033[32m 开始生成ca证书 \033[0m"
-        ./build-ca
+				./build-ca
 
-        echo -e "\033[32m 开始生成server证书 \033[0m"
-        ./build-key-server server
+				echo -e "\033[32m 开始生成server证书 \033[0m"
+				./build-key-server server
 
                 echo "拷贝证书文件到/etc/openvpn"
                 cd keys
                 cp ca.* server.* dh1024.pem /etc/openvpn
 
                 echo "获取内网地址段"
-        host=`/usr/sbin/ip addr |grep inet |grep -v inet6 |grep eth0|awk '{print $2}' |awk -F "/" '{print $1}'`
-        intranet=`echo $host|awk -F [.] '{print $1 "." $2 ".0.0"}'`
+				host=`/usr/sbin/ip addr |grep inet |grep -v inet6 |grep eth0|awk '{print $2}' |awk -F "/" '{print $1}'`
+				intranet=`echo $host|awk -F [.] '{print $1 "." $2 ".0.0"}'`
 
-        echo "生成服务端配置文件server.conf"
-        echo -e "port 1194 \nproto udp \ndev tuni \nca /etc/openvpn/ca.crt \ncert /etc/openvpn/server.crt \nkey /etc/openvpn/server.key \ndh /etc/openvpn/dh1024.pem \n
+				echo "生成服务端配置文件server.conf"
+				echo -e "port 1194 \nproto udp \ndev tuni \nca /etc/openvpn/ca.crt \ncert /etc/openvpn/server.crt \nkey /etc/openvpn/server.key \ndh /etc/openvpn/dh1024.pem \n
 server 10.10.0.0 255.255.255.0 \nifconfig-pool-persist ipp.txt \npush 'route $intranet 255.255.0.0' \npush 'dhcp-option DNS 8.8.8.8' \npush 'dhcp-option DNS 114.114.11
 4.114' \npush 'dhcp-option DNS 74.207.242.5' \nclient-to-client \nduplicate-cn \nkeepalive 10 120 \ncomp-lzo \nuser nobody \ngroup nobody \npersist-key \npersist-tun \
 nstatus /var/log/openvpn-status.log \nlog /var/log/openvpn.log \nlog-append /var/log/openvpn.log \n#crl-verify /etc/openvpn/easy-rsa/2.0/keys/crl.pem \n" >/etc/openvpn
@@ -346,15 +346,15 @@ nstatus /var/log/openvpn-status.log \nlog /var/log/openvpn.log \nlog-append /var
         create_openvpn_client_key
 
 
-                echo "开启ip转发"
-                cat /etc/sysctl.conf|grep -w "net.ipv4.ip_forward = 1"
+		echo "开启ip转发"
+		cat /etc/sysctl.conf|grep -w "net.ipv4.ip_forward = 1"
                 [ $? -ne 0 ] && echo "net.ipv4.ip_forward = 1" >>/etc/sysctl.conf
                 sysctl -p
 
                 echo "iptables开启vpn流量转发"
-        echo "禁止firewall"
-        systemctl stop firewalld.service
-        systemctl disable firewalld.service
+			echo "禁止firewall"
+			systemctl stop firewalld.service
+			systemctl disable firewalld.service
                 yum install iptables-services -y
                 sed -i 's/^-A INPUT -j REJECT --reject-with icmp-host-prohibited/#-A INPUT -j REJECT --reject-with icmp-host-prohibited/g' /etc/sysconfig/iptables
                 sed -i 's/^-A FORWARD -j REJECT --reject-with icmp-host-prohibited/#-A FORWARD -j REJECT --reject-with icmp-host-prohibited/g' /etc/sysconfig/iptables
@@ -393,12 +393,12 @@ function create_openvpn_client_key(){
         ./build-key $keyname
 
         echo "生成windows客户端client.ovpn文件"
-    cd /etc/openvpn/easy-rsa/2.0/keys
-    echo -e "client \ndev tun \nproto udp \nremote $public_ip 1194 \nresolv-retry infinite \nnobind \npersist-key \npersist-tun \nca ca.crt \ncert ${keyname}.crt \nkey
+		cd /etc/openvpn/easy-rsa/2.0/keys
+		echo -e "client \ndev tun \nproto udp \nremote $public_ip 1194 \nresolv-retry infinite \nnobind \npersist-key \npersist-tun \nca ca.crt \ncert ${keyname}.crt \nkey
  ${keyname}.key \nremote-cert-tls server \ncomp-lzo \nverb 3" > client.ovpn
 
         echo -e "\033[32m 打包证书 \033[0m"
-    tar -zcvf ${keyname}.tar.gz ca.* ${keyname}.crt ${keyname}.key client.ovpn
+		tar -zcvf ${keyname}.tar.gz ca.* ${keyname}.crt ${keyname}.key client.ovpn
 
         echo -e "\033[32m 下载证书 \033[0m" 
         sz ${keyname}.tar.gz
